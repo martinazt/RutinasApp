@@ -45,10 +45,9 @@ const getDeterministicUUID = (id: string): string => {
 
 export const DataService = {
     async getExercises() {
-        const { data, error } = await supabase.from('exercises').select('*');
+        const { data, error } = await (supabase.from('exercises') as any).select('*') as any;
         if (error) throw error;
-        // Map snake_case database fields to camelCase application types if needed
-        return data.map(e => ({
+        return (data || []).map((e: any) => ({
             ...e,
             muscleGroup: e.muscle_group,
             videoUrl: e.video_url,
@@ -58,43 +57,43 @@ export const DataService = {
     },
 
     async createExercise(exercise: Exercise) {
-        const { data, error } = await supabase.from('exercises').insert({
+        const { data, error } = await (supabase.from('exercises') as any).insert({
             id: exercise.id,
             name: exercise.name,
             muscle_group: exercise.muscleGroup,
             description: exercise.description,
             video_url: exercise.videoUrl,
             thumbnail_url: exercise.thumbnail,
-            is_custom: true // Always true for user-created
-        }).select().single();
+            is_custom: true
+        }).select().single() as any;
 
         if (error) throw error;
         return data;
     },
 
     async updateExercise(exercise: Exercise) {
-        const { data, error } = await supabase.from('exercises').update({
+        const { data, error } = await (supabase.from('exercises') as any).update({
             name: exercise.name,
             muscle_group: exercise.muscleGroup,
             description: exercise.description,
             video_url: exercise.videoUrl,
             thumbnail_url: exercise.thumbnail
-        }).eq('id', exercise.id).select().single();
+        }).eq('id', exercise.id).select().single() as any;
 
         if (error) throw error;
         return data;
     },
 
     async deleteExercise(id: string) {
-        const { error } = await supabase.from('exercises').delete().eq('id', id);
+        const { error } = await (supabase.from('exercises') as any).delete().eq('id', id);
         if (error) throw error;
         return true;
     },
 
     async getStudents() {
-        const { data, error } = await supabase.from('students').select('*');
+        const { data, error } = await (supabase.from('students') as any).select('*') as any;
         if (error) throw error;
-        return data.map(s => ({
+        return (data || []).map((s: any) => ({
             ...s,
             gymId: s.gym_id,
             isActive: s.is_active,
@@ -108,18 +107,18 @@ export const DataService = {
     },
 
     async getGyms() {
-        const { data, error } = await supabase.from('gyms').select('*');
+        const { data, error } = await (supabase.from('gyms') as any).select('*') as any;
         if (error) throw error;
-        return data.map(g => ({
+        return (data || []).map((g: any) => ({
             ...g,
             logoUrl: g.logo_url
         })) as Gym[];
     },
 
     async getClasses() {
-        const { data, error } = await supabase.from('classes').select('*');
+        const { data, error } = await (supabase.from('classes') as any).select('*') as any;
         if (error) throw error;
-        return data.map(c => ({
+        return (data || []).map((c: any) => ({
             id: c.id,
             gymId: c.gym_id,
             name: c.name,
@@ -132,7 +131,7 @@ export const DataService = {
     },
 
     async createClass(classSession: ClassSession) {
-        const { data, error } = await supabase.from('classes').insert({
+        const { data, error } = await (supabase.from('classes') as any).insert({
             id: classSession.id,
             gym_id: classSession.gymId,
             name: classSession.name,
@@ -141,43 +140,43 @@ export const DataService = {
             is_sporadic: classSession.isSporadic,
             specific_date: classSession.specificDate,
             routine_id: classSession.routineId
-        }).select().single();
+        }).select().single() as any;
 
         if (error) throw error;
         return data;
     },
 
     async deleteClass(id: string) {
-        const { error } = await supabase.from('classes').delete().eq('id', id);
+        const { error } = await (supabase.from('classes') as any).delete().eq('id', id);
         if (error) throw error;
         return true;
     },
 
     async createGym(gym: Gym) {
-        const { data, error } = await supabase.from('gyms').insert({
+        const { data, error } = await (supabase.from('gyms') as any).insert({
             id: gym.id,
             name: gym.name,
             location: gym.location,
             logo_url: gym.logoUrl
-        }).select().single();
+        }).select().single() as any;
 
         if (error) throw error;
         return data;
     },
 
     async updateGym(gym: Gym) {
-        const { data, error } = await supabase.from('gyms').update({
+        const { data, error } = await (supabase.from('gyms') as any).update({
             name: gym.name,
             location: gym.location,
             logo_url: gym.logoUrl
-        }).eq('id', gym.id).select().single();
+        }).eq('id', gym.id).select().single() as any;
 
         if (error) throw error;
         return data;
     },
 
     async deleteGym(id: string) {
-        const { error } = await supabase.from('gyms').delete().eq('id', id);
+        const { error } = await (supabase.from('gyms') as any).delete().eq('id', id);
         if (error) throw error;
         return true;
     },
@@ -192,18 +191,18 @@ export const DataService = {
                     *,
                     exercise: exercises (*)
                 )
-            `);
+            `) as any;
 
         if (error) throw error;
 
-        return data.map(r => ({
+        return (data || []).map((r: any) => ({
             id: r.id,
             name: r.name,
             studentId: r.student_id,
             createdAt: r.created_at,
             updatedAt: r.updated_at,
             tags: r.tags,
-            exercises: r.routine_exercises.sort((a: any, b: any) => a.order - b.order).map((re: any) => ({
+            exercises: (r.routine_exercises || []).sort((a: any, b: any) => a.order - b.order).map((re: any) => ({
                 exerciseId: re.exercise_id,
                 sets: re.sets,
                 reps: re.reps,
@@ -215,7 +214,7 @@ export const DataService = {
     },
 
     async createStudent(student: Student) {
-        const { data, error } = await supabase.from('students').insert({
+        const { data, error } = await (supabase.from('students') as any).insert({
             id: student.id,
             name: student.name,
             age: student.age,
@@ -223,14 +222,14 @@ export const DataService = {
             gym_id: student.gymId,
             is_active: student.isActive,
             avatar_url: student.avatar
-        }).select().single();
+        }).select().single() as any;
 
         if (error) throw error;
         return data;
     },
 
     async updateStudent(student: Student) {
-        const { data, error } = await supabase.from('students').update({
+        const { data, error } = await (supabase.from('students') as any).update({
             name: student.name,
             age: student.age,
             goal: student.goal,
@@ -241,21 +240,21 @@ export const DataService = {
             injuries: student.injuries,
             conditions: student.conditions,
             observations: student.observations
-        }).eq('id', student.id).select().single();
+        }).eq('id', student.id).select().single() as any;
 
         if (error) throw error;
         return data;
     },
 
     async deleteStudent(id: string) {
-        const { error } = await supabase.from('students').delete().eq('id', id);
+        const { error } = await (supabase.from('students') as any).delete().eq('id', id);
         if (error) throw error;
         return true;
     },
 
     async upsertRoutine(routine: Routine) {
         // 1. Upsert Routine (Create or Update)
-        const { error: routineError } = await supabase.from('routines').upsert({
+        const { error: routineError } = await (supabase.from('routines') as any).upsert({
             id: routine.id,
             name: routine.name,
             student_id: routine.studentId,
@@ -267,9 +266,8 @@ export const DataService = {
         if (routineError) throw routineError;
 
         // 2. Sync Exercises (Delete old ones, insert new ones)
-        // First delete all exercises for this routine to avoid duplicates/orphans
-        const { error: deleteError } = await supabase
-            .from('routine_exercises')
+        const { error: deleteError } = await (supabase
+            .from('routine_exercises') as any)
             .delete()
             .eq('routine_id', routine.id);
 
@@ -288,7 +286,7 @@ export const DataService = {
                 order: index
             }));
 
-            const { error: exercisesError } = await supabase.from('routine_exercises').insert(exercisesPayload);
+            const { error: exercisesError } = await (supabase.from('routine_exercises') as any).insert(exercisesPayload);
             if (exercisesError) throw exercisesError;
         }
 
@@ -297,7 +295,7 @@ export const DataService = {
 
     async seedDatabase(mockGyms: Gym[], mockExercises: Exercise[]) {
         // Seed Gyms
-        const { error: gymsError } = await supabase.from('gyms').upsert(
+        const { error: gymsError } = await (supabase.from('gyms') as any).upsert(
             mockGyms.map(g => ({
                 id: getDeterministicUUID(g.id),
                 name: g.name,
@@ -308,7 +306,7 @@ export const DataService = {
         if (gymsError) throw gymsError;
 
         // Seed Exercises
-        const { error: exercisesError } = await supabase.from('exercises').upsert(
+        const { error: exercisesError } = await (supabase.from('exercises') as any).upsert(
             mockExercises.map(e => ({
                 id: getDeterministicUUID(e.id),
                 name: e.name,

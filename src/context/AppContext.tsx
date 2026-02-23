@@ -170,8 +170,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
             addStudent,
             refreshGyms,
             refreshStudents,
-            refreshGyms,
-            refreshStudents,
             refreshExercises,
             refreshRoutines: async () => {
                 const fetched = await DataService.getRoutines();

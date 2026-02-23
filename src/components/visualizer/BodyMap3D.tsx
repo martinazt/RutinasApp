@@ -209,7 +209,7 @@ export function BodyMap3D({ primaryMuscles, secondaryMuscles = [] }: BodyMap3DPr
     const [isRotating, setIsRotating] = useState(true);
     const angleRef = useRef(0);
     const lastTimeRef = useRef(0);
-    const rafRef = useRef<number>();
+    const rafRef = useRef<number>(null!);
     const isRotatingRef = useRef(isRotating);
     isRotatingRef.current = isRotating;
 
